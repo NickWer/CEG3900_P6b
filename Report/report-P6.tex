@@ -12,6 +12,8 @@
 All necessary files will be uploaded to my githb repository at \url{https://github.com/NickWer/CEG3900_P6}
 
 Additionally, as this is the halfway point submission, I have opted to make partial progress on each problem, rather than completing a few.
+As a result, some of the work here will be more stream-of-conscious than my usual submissions. I plan to polish the report for the final deadline.
+
 \section{Task 1}
 I created four ubuntu server instances on AWS EC2 and then manually segmented each file into 13 rows (52 hashes to begin).
 I let the four instances of John run for ~3 hours and managed, as expected to crack the guest password (guest007).
@@ -101,6 +103,14 @@ eb61eead90e3b899c6bcbe27ac581660:HELLO
 2c9341ca4cf3d87b9e4eb905d6a3ec45:Test1234
 958152288f2d2303ae045cffc43a02cd:MYSECRET
 \end{verbatim}
+
+Finally, I found this article \url{http://blog.trifork.com/2013/12/24/docker-from-a-distance-the-remote-api/}. It appears that using this, I can trivially implement these android applications by just having the buttons send AJAX.
+Full documentation is here: \url{https://docs.docker.com/engine/api/v1.27/}
+
+One possible solution is to implement the UI as an ultra simple embedded web application, to streamline the interaction with the API (no need to worry about how to use the JSON objects).
+That said, gson or something similar may be able to make use of it easily enough. I've used it before so it shouldn't be bad.
+
+\section{Task 4}
 
 
 \end{document}
