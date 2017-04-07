@@ -111,6 +111,40 @@ One possible solution is to implement the UI as an ultra simple embedded web app
 That said, gson or something similar may be able to make use of it easily enough. I've used it before so it shouldn't be bad.
 
 \section{Task 4}
+I feel like I am very close - I am just really struggling to get cassandra to start from inside the docker, and not having much luck with linking an outside docker to this one.
 
+Here is the post I made in pilot:
+\begin{verbatim}
+
+
+Trying to construct a docker image for painbow. Should I run a second docker for cassandra and link it to the painbow instance as they do in the docs at https://hub.docker.com/_/cassandra/ ?
+
+Or should I run cassandra inside of my painbow docker - which is what I'm currently trying to do after giving up on the previous?
+
+I get the following error:
+
+nick@nick-lenovo ~/D/C/P/Task4> docker run -i nick/task4 bin/painbow --migrate
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+Exception in thread "main" com.datastax.driver.core.exceptions.NoHostAvailableException: All host(s) tried for query failed (tried: /127.0.0.1:9042 (com.datastax.driver.core.TransportException: [/127.0.0.1:9042] Cannot connect))
+    at com.datastax.driver.core.ControlConnection.reconnectInternal(ControlConnection.java:227)
+    at com.datastax.driver.core.ControlConnection.connect(ControlConnection.java:82)
+    at com.datastax.driver.core.Cluster$Manager.init(Cluster.java:1307)
+    at com.datastax.driver.core.Cluster.init(Cluster.java:159)
+    at com.datastax.driver.core.Cluster.connect(Cluster.java:249)
+    at us.yellosoft.painbow.Painbow.main(Painbow.java:154)
+
+Basically: I'm unable to start cassandra within my docker.
+
+Running `service cassandra start` outputs an error, too. Based on preliminary research this is expected when inside of a docker (security reasons) and non-fatal, but i'm not conviced.
+
+docker run -i nick/task4 service cassandra start
+/etc/init.d/cassandra: 72: ulimit: error setting limit (Operation not permitted)
+
+Taking any and all ideas.
+
+My dockerfile is basically a merge of the gradle and cassandra dockerfiles, plus RUN statements to build painbow.
+\end{verbatim}
 
 \end{document}
