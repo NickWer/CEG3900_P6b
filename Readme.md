@@ -1,3 +1,3 @@
-## P6 Submission
+## P6b Submission
 
-No Notes at this time
+This repositiory marks the beginnings of P6b. The commit associated with this text in the readme marks when the fork happened.
