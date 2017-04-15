@@ -48,7 +48,7 @@ Figure 2 shows the main screen of my APK - however without root I cannot get muc
 	\end{figure}
 	\begin{figure}[ht]
         \centerline{
-            \includegraphics[width=7.5in]{img/t1s2.png}
+            \includegraphics[width=3in]{img/t1s2.png}
         }
 		\centering
 		\caption{Task 1 - APK Running, insofar as it is able without root.}
@@ -167,11 +167,12 @@ An unfortunate side effect is that it suffers from the same permissions error. I
 
 	\begin{figure}[ht]
         \centerline{
-            \includegraphics[width=7.5in]{img/t2s1.png}
+            \includegraphics[width=3in]{img/t2s1.png}
         }
 		\centering
 		\caption{Task 2 - APK Running, insofar as it is able without root.}
 	\end{figure}
+	\clearpage
 
 
 \section{Task 3}
@@ -220,30 +221,31 @@ Previously, I found this article \url{http://blog.trifork.com/2013/12/24/docker-
 
 That said, it ended up actually being way easier to just throw hashcat and it's dependencies into the main folder and run it. Sadly, tonight will not be the night for cool experiments.
 
-This apk was a trivial modification of the previous: all I did was modify the previous one to point at the new remote address (i.e.\ the EC2 instance rather than my home PC). Because my settings interface is right above my output, it didn't seem worth it's own tab. Maybe that's just lazy.
+This apk was a trivial modification of the previous: all I did was modify the previous one to point at the new remote address (i.e.\ the EC2 instance rather than my home PC).
 
 	\begin{figure}[ht]
         \centerline{
-            \includegraphics[width=7.5in]{img/t3s1.png}
+            \includegraphics[width=3in]{img/t3s1.png}
         }
 		\centering
 		\caption{Task 3 - APK Running, insofar as it is able without root.}
 	\end{figure}
+	\clearpage
 
 
 \section{Task 4}
 I feel like I am very close - I am just really struggling to get cassandra to start from inside the docker, and not having much luck with linking an outside docker to this one.
 
 Here is the post I made in pilot:
-\begin{verbatim}
+\hrule
 
-
-Trying to construct a docker image for painbow. Should I run a second docker for cassandra and link it to the painbow instance as they do in the docs at https://hub.docker.com/_/cassandra/ ?
+Trying to construct a docker image for painbow. Should I run a second docker for cassandra and link it to the painbow instance as they do in the docs at \url{https://hub.docker.com/_/cassandra/}?
 
 Or should I run cassandra inside of my painbow docker - which is what I'm currently trying to do after giving up on the previous?
 
 I get the following error:
 
+\begin{verbatim}
 nick@nick-lenovo ~/D/C/P/Task4> docker run -i nick/task4 bin/painbow --migrate
 SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
 SLF4J: Defaulting to no-operation (NOP) logger implementation
@@ -256,6 +258,7 @@ Exception in thread "main" com.datastax.driver.core.exceptions.NoHostAvailableEx
     at com.datastax.driver.core.Cluster.connect(Cluster.java:249)
     at us.yellosoft.painbow.Painbow.main(Painbow.java:154)
 
+\end{verbatim}
 Basically: I'm unable to start cassandra within my docker.
 
 Running `service cassandra start` outputs an error, too. Based on preliminary research this is expected when inside of a docker (security reasons) and non-fatal, but i'm not conviced.
@@ -266,8 +269,54 @@ docker run -i nick/task4 service cassandra start
 Taking any and all ideas.
 
 My dockerfile is basically a merge of the gradle and cassandra dockerfiles, plus RUN statements to build painbow.
-\end{verbatim}
+\hrule
 
 \section{Task 5}
+See figures 5-10 for screenshots of apk, and Task 5 folder.
+
+My apk works as expected and provides very nice feedback. I was very impressed with the Nbcxz library - it is fast and clearly effective. Something like this would definitely be wise to build into future applications, provided it can scale well (I mean, people don't set their passwords very often, but it might serve as a DoS vector or something similar...)
+
+Anyways you can tell I thought it was interesting because I took a groundbreaking 5th screenshot.
+
+	\begin{figure}[ht]
+        \centerline{
+            \includegraphics[width=3in]{img/t5s1.png}
+        }
+		\centering
+		\caption{Task 5 - Starting screen}
+	\end{figure}
+
+	\begin{figure}[ht]
+        \centerline{
+            \includegraphics[width=3in]{img/t5s2.png}
+        }
+		\centering
+		\caption{Task 5 - Using a trivial password: aaa}
+	\end{figure}
+
+	\begin{figure}[ht]
+        \centerline{
+            \includegraphics[width=3in]{img/t5s3.png}
+        }
+		\centering
+		\caption{Task 5 - Using a trivial password with random characters}
+	\end{figure}
+
+	\begin{figure}[ht]
+        \centerline{
+            \includegraphics[width=3in]{img/t5s4.png}
+        }
+		\centering
+		\caption{Task 5 - A few random symbols and letters}
+	\end{figure}
+
+	\begin{figure}[ht]
+        \centerline{
+            \includegraphics[width=3in]{img/t5s5.png}
+        }
+		\centering
+		\caption{Task 5 - A bunch of random symbols, some random letters, and a word or two.}
+	\end{figure}
+
 
 \end{document}
