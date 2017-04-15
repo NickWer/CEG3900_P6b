@@ -1,4 +1,4 @@
-package com.example.nick.jtrrunner;
+package com.example.nick.hashcatrunner;
 
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +10,6 @@ import android.widget.EditText;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -25,10 +24,9 @@ public class MainActivity extends AppCompatActivity {
         btnGo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                (new runSsh()).execute("ec2-34-209-162-103.us-west-2.compute.amazonaws.com", R.id.txtOutput1);
-                (new runSsh()).execute("ec2-34-209-228-210.us-west-2.compute.amazonaws.com", R.id.txtOutput2);
-                (new runSsh()).execute("ec2-34-209-93-48.us-west-2.compute.amazonaws.com", R.id.txtOutput3);
-                (new runSsh()).execute("ec2-52-26-55-136.us-west-2.compute.amazonaws.com", R.id.txtOutput4);
+                String hashurl = ((EditText)findViewById(R.id.hashes)).getText().toString();
+                String wordsurl = ((EditText)findViewById(R.id.hashes)).getText().toString();
+                (new runSsh()).execute("192.168.1.7", R.id.txtOutput1, hashurl, wordsurl);
             }
         });
     }
@@ -40,14 +38,15 @@ public class MainActivity extends AppCompatActivity {
         /**
          * Gets a File for the private key. Busts the space saving methods where
          * assets are meant to be read from the apk directly.
+         *
          * http://stackoverflow.com/questions/8474821
          * @return a File object referencing the private key
          */
         private File getPrivKey(){
-            File f = new File(getCacheDir()+"/jtrapp.pem");
+            File f = new File(getCacheDir()+"/hcapp.pem");
             if (!f.exists()) try {
 
-                InputStream is = getAssets().open("jtrapp.pem");
+                InputStream is = getAssets().open("hcapp.pem");
                 int size = is.available();
                 byte[] buffer = new byte[size];
                 is.read(buffer);
@@ -66,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
             String out = "ssh -i ";
             out += getPrivKey().getPath() + " ";
             out += "ubuntu@" + server;
-            out += "john etc-shadow-2009.txt";
             return out;
         }
 
@@ -85,7 +83,9 @@ public class MainActivity extends AppCompatActivity {
                 BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
                 textfield = (EditText) findViewById((int)params[1]);
 
-                //out.println("ls -l /home/me");
+                out.println("curl " + params[2] + " > hashes.txt");
+                out.println("curl " + params[3] + " > words.txt");
+                out.println("./hashcat64.bin -m 0 -a 0 --show hashes.txt words.txt");
                 while (in.ready()) {
                     stdio += "\n" + in.readLine();
                     publishProgress();

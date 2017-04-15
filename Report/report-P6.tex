@@ -11,16 +11,33 @@
 \section{Preamble}
 All necessary files will be uploaded to my githb repository at \url{https://github.com/NickWer/CEG3900_P6b}
 
-Additionally, as this is the halfway point submission, I have opted to make partial progress on each problem, rather than completing a few.
-As a result, some of the work here will be more stream-of-conscious than my usual submissions. I plan to polish the report for the final deadline.
-
 \section{Task 1}
+Deliverables: See figure 2
 I created four ubuntu server instances on AWS EC2 and then manually segmented each file into 13 rows (52 hashes to begin).
 I let the four instances of John run for ~3 hours and managed, as expected to crack the guest password (guest007).
 
-At this time I haven't started the android APK - it's unclear how I'm going to make it run.
-That is, I think it won't be bad to start the process, but I'm unsure how I will be able to get the output/list collected passwords.
-Perhaps two buttons - one that starts john, the other that runs `john --show etc-shadow-2009.txt` and returns that output.
+For the APK, I created a relatively simple setup: A button, a status label, and four scrollbox'd \texttt{TextView}s for the standard output of each computer. When the button is click, I spin up for AsynTasks that use \texttt{Process.getRuntime().exe()} to run an ssh command. One hurdle that I had to overcome was that android restricts reading assets to strictly from the APK. I found on stack overflow a small bit of code that I modified to suit my neads - it reads the file from the assets folder and copies it into an unarchived file in the temp folder, where it can then be referenced by the ssh command. 
+
+I believe this solution will only work on rooted devices. Running it without causes the following error:
+\begin{verbatim}
+W/System.err: java.io.IOException: Cannot run program "ssh": error=13, Permission denied
+W/System.err:     at java.lang.ProcessBuilder.start(ProcessBuilder.java:983)
+W/System.err:     at java.lang.Runtime.exec(Runtime.java:691)
+W/System.err:     at java.lang.Runtime.exec(Runtime.java:524)
+W/System.err:     at java.lang.Runtime.exec(Runtime.java:421)
+W/System.err:     at com.example.nick.jtrrunner.MainActivity$runSsh.doInBackground(MainActivity.java:74)
+W/System.err:     at com.example.nick.jtrrunner.MainActivity$runSsh.doInBackground(MainActivity.java:29)
+W/System.err:     at android.os.AsyncTask$2.call(AsyncTask.java:304)
+W/System.err:     at java.util.concurrent.FutureTask.run(FutureTask.java:237)
+W/System.err:     at android.os.AsyncTask$SerialExecutor$1.run(AsyncTask.java:243)
+W/System.err:     at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1133)
+W/System.err:     at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:607)
+W/System.err:     at java.lang.Thread.run(Thread.java:761)
+W/System.err: Caused by: java.io.IOException: error=13, Permission denied
+W/System.err:     at java.lang.UNIXProcess.forkAndExec(Native Method)
+\end{verbatim}
+
+Figure 2 shows the main screen of my APK - however without root I cannot get much futher. To display progress to the user, I keep the stdio output in a string, and whenever more comes in, it uses the publishProgress method to update the UI from the UI thread, which I do know works.
 
 	\begin{figure}[ht]
         \centerline{
@@ -28,6 +45,13 @@ Perhaps two buttons - one that starts john, the other that runs `john --show etc
         }
 		\centering
 		\caption{Task 1 - Four instances running at once over ssh}
+	\end{figure}
+	\begin{figure}[ht]
+        \centerline{
+            \includegraphics[width=7.5in]{img/t1s2.png}
+        }
+		\centering
+		\caption{Task 1 - APK Running, insofar as it is able without root.}
 	\end{figure}
 
 
@@ -60,10 +84,98 @@ eb61eead90e3b899c6bcbe27ac581660:HELLO
 958152288f2d2303ae045cffc43a02cd:MYSECRET
 \end{verbatim}
 
-I have not yet completed the android APK
+\textbf{Rules File} I annotated the combinator rule file:
+\begin{verbatim}
+## rule: case recovery
+## limits: capitalized rules only char positions 3 to 7
+## example: annalove ---> AnnaLove
+## extras: none
+#noop
+:
+#all lowercase
+l
+#capitalize first letter
+c
+#uppercase all letters
+u
+
+#capitalize first letter, toggle case at position N (3..7)
+c T3
+c T4
+c T5
+c T6
+c T7
+
+## rule: experienced effective
+## limits: none
+## example: FringeDevision ---> fringedevision2009
+## extras: lower case only
+
+#Lowercase all letters, append  1, 2, 123, 2007, 2008, 2009
+l $1
+l $2
+l $1$2$3
+l $2$0$0$7
+l $2$0$0$8
+l $2$0$0$9
+
+## rule: hyphen variety
+## limits: insert at char positions 3 to 7
+## example: theobserver ---> the observer
+## extras: lower case only
+
+#lowercase all letters, add space/&/-/. at position N
+l i3 
+l i4 
+l i5 
+l i6 
+l i7 
+l i3&
+l i4&
+l i5&
+l i6&
+l i7&
+l i3+
+l i4+
+l i5+
+l i6+
+l i7+
+l i3-
+l i4-
+l i5-
+l i6-
+l i7-
+l i3.
+l i4.
+l i5.
+l i6.
+l i7.
+
+\end{verbatim}
+
+\textbf{Android APK}
+My android APK for this problem was extremely similar to the previous. All I did was:
+\begin{enumerate}
+\item only run one instance
+\item Added inputs for hashes and wordlist
+\item pointed it at my home computer
+\item created a user and used the server ssh key from before. Most certainly NOT going to commit my actual private key to a public repo.
+\item This time I use the shell interactively rather than doing a remote execution. I download the hashes and wordlist files using curl.
+\item Finally I run hashcat and provide output as before.
+\end{enumerate}
+An unfortunate side effect is that it suffers from the same permissions error. I am not sure how to get past this.
+
+	\begin{figure}[ht]
+        \centerline{
+            \includegraphics[width=7.5in]{img/t2s1.png}
+        }
+		\centering
+		\caption{Task 2 - APK Running, insofar as it is able without root.}
+	\end{figure}
+
 
 \section{Task 3}
-I haven't technically started this yet, however I by creating the docker container for the previous section, I was able to trivially transfer my hashcat setup to the new machine.
+During my previous sumission I created the docker container for Task 2. I was able to trivially transfer my hashcat setup to the new machine.
 To test it, I modified my dockerfile slightly from before:
 
 
@@ -104,11 +216,20 @@ eb61eead90e3b899c6bcbe27ac581660:HELLO
 958152288f2d2303ae045cffc43a02cd:MYSECRET
 \end{verbatim}
 
-Finally, I found this article \url{http://blog.trifork.com/2013/12/24/docker-from-a-distance-the-remote-api/}. It appears that using this, I can trivially implement these android applications by just having the buttons send AJAX.
-Full documentation is here: \url{https://docs.docker.com/engine/api/v1.27/}
+Previously, I found this article \url{http://blog.trifork.com/2013/12/24/docker-from-a-distance-the-remote-api/}. It appeared that if I used that, I could trivially implement these android applications by just having the buttons send AJAX.
 
-One possible solution is to implement the UI as an ultra simple embedded web application, to streamline the interaction with the API (no need to worry about how to use the JSON objects).
-That said, gson or something similar may be able to make use of it easily enough. I've used it before so it shouldn't be bad.
+That said, it ended up actually being way easier to just throw hashcat and it's dependencies into the main folder and run it. Sadly, tonight will not be the night for cool experiments.
+
+This apk was a trivial modification of the previous: all I did was modify the previous one to point at the new remote address (i.e.\ the EC2 instance rather than my home PC). Because my settings interface is right above my output, it didn't seem worth it's own tab. Maybe that's just lazy.
+
+	\begin{figure}[ht]
+        \centerline{
+            \includegraphics[width=7.5in]{img/t3s1.png}
+        }
+		\centering
+		\caption{Task 3 - APK Running, insofar as it is able without root.}
+	\end{figure}
+
 
 \section{Task 4}
 I feel like I am very close - I am just really struggling to get cassandra to start from inside the docker, and not having much luck with linking an outside docker to this one.
@@ -146,5 +267,7 @@ Taking any and all ideas.
 
 My dockerfile is basically a merge of the gradle and cassandra dockerfiles, plus RUN statements to build painbow.
 \end{verbatim}
+
+\section{Task 5}
 
 \end{document}
